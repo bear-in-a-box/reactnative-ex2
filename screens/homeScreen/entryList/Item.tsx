@@ -15,7 +15,7 @@ const Item: React.FC<Props> = ({ report, storageType }) => {
   return (
     <ListItem
       key={report.date}
-      title={new Date(report.date).toLocaleDateString()}
+      title={new Date(report.date).toLocaleDateString('en-GB')}
       subtitle={`${report.liters} l/${report.kmsSinceLastFill} km`}
       badge={{ value: report.model }}
       bottomDivider

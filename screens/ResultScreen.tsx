@@ -54,7 +54,7 @@ const ResultScreen: React.FC = () => {
         }
       >
         <ListItem
-          title={new Date(report.date).toLocaleDateString('pl')}
+          title={new Date(report.date).toLocaleDateString('en-GB')}
           subtitle="Data pomiaru"
         />
         <ListItem title={report.model} subtitle="Marka/model auta" />
