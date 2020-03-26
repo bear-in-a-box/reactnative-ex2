@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
 import { Button, Card, ListItem } from 'react-native-elements';
 import { Report } from '../models/report.model';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -34,6 +34,20 @@ const ResultScreen: React.FC = () => {
       routes: [{ name: 'Home', params: { storageType } }]
     });
   };
+
+  const deleteReportConfirm = () =>
+    Alert.alert(
+      'Czy na pewno usunąć pomiar?',
+      'Tej operacji nie można cofnąć.',
+      [
+        { text: 'Nie', style: 'cancel' },
+        {
+          text: 'Tak, usuń pomiar',
+          style: 'destructive',
+          onPress: () => deleteReport()
+        }
+      ]
+    );
 
   if (report == null) {
     return (
@@ -72,7 +86,7 @@ const ResultScreen: React.FC = () => {
             name: 'delete',
             iconStyle: { color: 'white' }
           }}
-          onPress={() => deleteReport()}
+          onPress={() => deleteReportConfirm()}
           loading={isDeleting}
           disabled={isDeleting}
         />
