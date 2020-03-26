@@ -1,14 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  ActivityIndicator
-} from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { Button, Card, ListItem } from 'react-native-elements';
 import { Report } from '../models/report.model';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { Image, Button } from 'react-native-elements';
 import { StorageType } from '../storage';
 import useStorage from '../storage/connectors/useStorage.hook';
 
@@ -20,6 +14,14 @@ const ResultScreen: React.FC = () => {
   const storage = useStorage(storageType);
 
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+  const title = useMemo(
+    () =>
+      `${report.kmsSinceLastFill} km ze spalaniem ${report.litersPerKms.toFixed(
+        2
+      )} l/100km`,
+    [report]
+  );
 
   const deleteReport = async () => {
     setIsDeleting(true);
@@ -43,40 +45,21 @@ const ResultScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Marka/model</Text>
-      <TextInput style={styles.input} editable={false} value={report.model} />
-      <Text>Liczba kilometrów przejechanych od ostatniego tankowania</Text>
-      <TextInput
-        style={styles.input}
-        editable={false}
-        value={String(report.kmsSinceLastFill)}
-      />
-      <Text>Liczba litrów spalonych od ostatniego tankowania</Text>
-      <TextInput
-        style={styles.input}
-        editable={false}
-        value={String(report.liters)}
-      />
-      <Text>Data pomiaru</Text>
-      <TextInput
-        style={styles.input}
-        editable={false}
-        value={new Date(report.date).toLocaleDateString('pl')}
-      />
-      <View style={styles.resultView}>
-        <Text style={styles.resultValue}>
-          {report.litersPerKms.toFixed(2)} l/100km
-        </Text>
-      </View>
-      {report.image != null && report.image !== '' && (
-        <View style={styles.center}>
-          <Image
-            source={{ uri: report.image }}
-            style={{ width: 200, height: 200 }}
-            PlaceholderContent={<ActivityIndicator />}
-          />
-        </View>
-      )}
+      <Card
+        title={title}
+        image={
+          report.image != null && report.image !== ''
+            ? { uri: report.image }
+            : null
+        }
+      >
+        <ListItem
+          title={new Date(report.date).toLocaleDateString('pl')}
+          subtitle="Data pomiaru"
+        />
+        <ListItem title={report.model} subtitle="Marka/model auta" />
+        <ListItem title={String(report.liters)} subtitle="Litry spalone" />
+      </Card>
       <View style={styles.center}>
         <Button
           title="Usuń"

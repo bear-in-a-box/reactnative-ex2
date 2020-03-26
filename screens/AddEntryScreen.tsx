@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  TextInput,
-  Platform,
-  KeyboardAvoidingView
-} from 'react-native';
+import { View, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
+import { Text, Button, Input } from 'react-native-elements';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -20,11 +13,13 @@ const AddEntryScreen: React.FC = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [image, setImage] = useState<string>('');
   const [datePickerVisible, setDatePickerVisible] = useState<boolean>(false);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
 
   const navigation = useNavigation();
   const route = useRoute<any>();
   const storageType = route.params?.storageType;
   const saveResult = () => {
+    setIsAdding(true);
     const data: ReportToAdd = {
       model,
       kmsSinceLastFill,
@@ -47,49 +42,55 @@ const AddEntryScreen: React.FC = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <Text style={styles.storage}>
-        Wpis zostanie zapisany w: {storageType}
-      </Text>
-      <Text>Marka/model</Text>
-      <TextInput
-        style={styles.input}
+      <Input
+        label="Marka/model"
+        containerStyle={styles.input}
         placeholder="XYZ"
         value={model}
         onChangeText={setModel}
       />
-      <Text>Liczba kilometrów przejechanych od ostatniego tankowania</Text>
-      <TextInput
-        style={styles.input}
+      <Input
+        label="Liczba kilometrów przejechanych od ostatniego tankowania"
+        containerStyle={styles.input}
         placeholder="0.0"
         value={String(kmsSinceLastFill)}
         onChangeText={text => setKmsSinceLastFill(+text || 0)}
         keyboardType="numeric"
       />
-      <Text>Liczba litrów spalonych od ostatniego tankowania</Text>
-      <TextInput
-        style={styles.input}
+      <Input
+        label="Liczba litrów spalonych od ostatniego tankowania"
+        containerStyle={styles.input}
         placeholder="0.0"
         value={String(liters)}
         onChangeText={text => setLiters(+text || 0)}
         keyboardType="numeric"
       />
-      <Text>Data pomiaru</Text>
       <View style={{ ...styles.date, ...styles.input }}>
-        <TextInput
-          style={styles.dateInput}
+        <Input
+          label="Data pomiaru"
           editable={false}
           value={date.toLocaleDateString('pl')}
         />
-        <Button title="Ustaw..." onPress={showDatePicker} />
+        <Button
+          buttonStyle={{ width: 100, alignSelf: 'flex-end' }}
+          title="Ustaw..."
+          onPress={showDatePicker}
+        />
       </View>
-      <Text>URL do zdjęcia</Text>
-      <TextInput
-        style={styles.input}
+      <Input
+        label="URL do zdjęcia (opcjonalne)"
+        containerStyle={styles.input}
         placeholder="https://..."
         value={image}
         onChangeText={setImage}
       />
-      <Button title="Przelicz" onPress={saveResult} />
+      <Button
+        title={`Zapisz do pamięci ${storageType}`}
+        onPress={saveResult}
+        loading={isAdding}
+        disabled={isAdding}
+        buttonStyle={{ width: 300, alignSelf: 'center' }}
+      />
       {datePickerVisible && (
         <DateTimePicker
           testID="dateTimePicker"
@@ -115,19 +116,10 @@ const styles = StyleSheet.create({
     padding: 16
   },
   input: {
-    paddingVertical: 8,
-    marginBottom: 16
+    marginBottom: 20
   },
   date: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     flexWrap: 'nowrap'
-  },
-  dateInput: {
-    flexGrow: 1
-  },
-  storage: {
-    color: '#09f',
-    fontWeight: 'bold',
-    marginVertical: 50
   }
 });
