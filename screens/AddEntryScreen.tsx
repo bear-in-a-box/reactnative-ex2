@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Report } from '../models/report.model';
+
+import { ReportToAdd } from '../storage/interface';
 
 const AddEntryScreen: React.FC = () => {
   const [model, setModel] = useState<string>('');
@@ -24,10 +25,11 @@ const AddEntryScreen: React.FC = () => {
   const route = useRoute<any>();
   const storageType = route.params?.storageType;
   const saveResult = () => {
-    const data: Report = {
+    const data: ReportToAdd = {
       model,
       kmsSinceLastFill,
       liters,
+      litersPerKms: (liters / (kmsSinceLastFill || 1)) * 100,
       image,
       date: +date
     };
@@ -37,7 +39,7 @@ const AddEntryScreen: React.FC = () => {
   const showDatePicker = () => {
     setDatePickerVisible(true);
   };
-  const onDateChange = (_event, selectedDate) => {
+  const onDateChange = (_event: any, selectedDate: Date) => {
     const targetDate: Date = selectedDate || date;
     setDatePickerVisible(Platform.OS === 'ios');
     setDate(targetDate);

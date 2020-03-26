@@ -13,7 +13,7 @@ if (!(global as any).atob) {
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { exhaustMap, shareReplay } from 'rxjs/operators';
 
-import { Storage } from '../interface';
+import { Storage, ReportToAdd } from '../interface';
 import { Report } from '../../models/report.model';
 import { FIRESTORE_CONFIG } from './config.firestore';
 
@@ -39,8 +39,15 @@ export class FirestoreStorage implements Storage {
     this.store = firebase.firestore(this.app);
   }
 
-  async addReport(report: Report) {
+  async addReport(report: ReportToAdd) {
     await this.store.collection(FirestoreStorage.COLLECTION).add(report);
+  }
+
+  async deleteReport(id: string) {
+    await this.store
+      .collection(FirestoreStorage.COLLECTION)
+      .doc(id)
+      .delete();
   }
 
   refresh() {
@@ -56,10 +63,11 @@ export class FirestoreStorage implements Storage {
         .get();
       reports = snapshot.docs.map(doc => {
         const sourceDate = doc.data().date;
-        const date =
+        const date: number =
           typeof sourceDate === 'number' ? sourceDate : sourceDate.toMillis();
         return {
           ...doc.data(),
+          id: doc.id,
           date
         } as Report;
       });

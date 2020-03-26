@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,12 +7,31 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { Report } from '../models/report.model';
-import { useRoute } from '@react-navigation/native';
-import { Image } from 'react-native-elements';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { Image, Button } from 'react-native-elements';
+import { StorageType } from '../storage';
+import useStorage from '../storage/connectors/useStorage.hook';
 
 const ResultScreen: React.FC = () => {
+  const navigation = useNavigation();
   const route = useRoute<any>();
   const report: Report = route.params?.report;
+  const storageType: StorageType = route.params?.storageType;
+  const storage = useStorage(storageType);
+
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+  const deleteReport = async () => {
+    setIsDeleting(true);
+    try {
+      await storage.deleteReport(report.id);
+    } catch (e) {}
+    storage.refresh();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home', params: { storageType } }]
+    });
+  };
 
   if (report == null) {
     return (
@@ -21,11 +40,6 @@ const ResultScreen: React.FC = () => {
       </View>
     );
   }
-
-  const result = useMemo(
-    () => (report.liters / (report.kmsSinceLastFill || 1)) * 100,
-    [report]
-  );
 
   return (
     <View style={styles.container}>
@@ -50,10 +64,12 @@ const ResultScreen: React.FC = () => {
         value={new Date(report.date).toLocaleDateString('pl')}
       />
       <View style={styles.resultView}>
-        <Text style={styles.resultValue}>{result.toFixed(2)} l/100km</Text>
+        <Text style={styles.resultValue}>
+          {report.litersPerKms.toFixed(2)} l/100km
+        </Text>
       </View>
       {report.image != null && report.image !== '' && (
-        <View style={styles.image}>
+        <View style={styles.center}>
           <Image
             source={{ uri: report.image }}
             style={{ width: 200, height: 200 }}
@@ -61,6 +77,23 @@ const ResultScreen: React.FC = () => {
           />
         </View>
       )}
+      <View style={styles.center}>
+        <Button
+          title="Usuń"
+          buttonStyle={{
+            backgroundColor: '#f00',
+            width: 150,
+            marginTop: 20
+          }}
+          icon={{
+            name: 'delete',
+            iconStyle: { color: 'white' }
+          }}
+          onPress={() => deleteReport()}
+          loading={isDeleting}
+          disabled={isDeleting}
+        />
+      </View>
     </View>
   );
 };
@@ -86,7 +119,7 @@ const styles = StyleSheet.create({
   resultValue: {
     fontSize: 48
   },
-  image: {
+  center: {
     flexDirection: 'row',
     justifyContent: 'center'
   }

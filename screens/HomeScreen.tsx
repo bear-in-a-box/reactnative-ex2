@@ -1,47 +1,37 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  TextInput,
-  Platform
-} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { ButtonGroup } from 'react-native-elements';
+import { StyleSheet, View } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { ButtonGroup, Text } from 'react-native-elements';
 import EntryList from './homeScreen/EntryList';
 import { StorageType } from '../storage';
 
-const matchSection = (storageType: StorageType) => {
-  switch (storageType) {
-    case StorageType.Firestore:
-      return 1;
-    case StorageType.Local:
-    default:
-      return 0;
-  }
-};
+const buttons = [
+  { label: 'Local (SQLite)', storageType: StorageType.Local },
+  { label: 'Firestore', storageType: StorageType.Firestore }
+];
+const buttonLabels = buttons.map(({ label }) => label);
+
+function matchSection(storageType: StorageType): number {
+  const index = buttons.findIndex(button => button.storageType === storageType);
+  return index === -1 ? 0 : index;
+}
 
 const HomeScreen: React.FC = () => {
-  const navigation = useNavigation();
   const route = useRoute<any>();
 
   const [section, setSection] = useState<number>(
     matchSection(route.params?.storageType)
   );
 
-  const buttons = ['Local (SQLite)', 'Firestore'];
-
   return (
     <View style={styles.container}>
       <ButtonGroup
         onPress={setSection}
         selectedIndex={section}
-        buttons={buttons}
+        buttons={buttonLabels}
         containerStyle={{ height: 50 }}
       />
-      {section === 0 && <EntryList storageType={StorageType.Local} />}
-      {section === 1 && <EntryList storageType={StorageType.Firestore} />}
+      <EntryList storageType={buttons[section].storageType} />
     </View>
   );
 };

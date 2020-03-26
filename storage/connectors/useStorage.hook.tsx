@@ -9,14 +9,17 @@ interface UseStorageData {
   loading: boolean;
   refresh(): void;
   addReport(report: Report): Promise<void>;
+  deleteReport(id: string): Promise<void>;
 }
 
 type UseStorage = (storageType: StorageType) => UseStorageData;
 
 const useStorage: UseStorage = storageType => {
-  const { current: storage } = useRef(getStorage(storageType));
+  const [storage, setStorage] = useState(getStorage(storageType));
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => setStorage(getStorage(storageType)), [storageType]);
 
   useEffect(() => {
     const reportsSub = storage.reports$.subscribe(setReports);
@@ -35,7 +38,8 @@ const useStorage: UseStorage = storageType => {
     reports,
     loading,
     refresh: () => storage.refresh(),
-    addReport: report => storage.addReport(report)
+    addReport: report => storage.addReport(report),
+    deleteReport: id => storage.deleteReport(id)
   };
 };
 

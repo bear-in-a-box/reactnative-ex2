@@ -1,14 +1,16 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { ListItem } from 'react-native-elements';
 
 import { Report } from '../../../models/report.model';
-import { ListItem } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
+import { StorageType } from '../../../storage';
 
 interface Props {
   report: Report;
+  storageType: StorageType;
 }
 
-const Item: React.FC<Props> = ({ report }) => {
+const Item: React.FC<Props> = ({ report, storageType }) => {
   const navigation = useNavigation();
   return (
     <ListItem
@@ -25,7 +27,7 @@ const Item: React.FC<Props> = ({ report }) => {
           source: { uri: report.image }
         }
       }
-      onPress={() => navigation.navigate('Result', { report })}
+      onPress={() => navigation.navigate('Result', { report, storageType })}
     />
   );
 };

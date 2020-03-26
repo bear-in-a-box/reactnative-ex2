@@ -4,7 +4,7 @@ import { StorageType } from '../../storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, View } from 'react-native';
 import Item from './entryList/Item';
-import { Button, Text } from 'react-native-elements';
+import { Button, Text, Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 
 interface Props {
@@ -15,7 +15,7 @@ const EntryList: React.FC<Props> = ({ storageType }) => {
   const { reports, loading, refresh } = useStorage(storageType);
   const navigation = useNavigation();
 
-  useEffect(() => refresh(), []);
+  useEffect(() => refresh(), [storageType]);
 
   return (
     <React.Fragment>
@@ -23,24 +23,50 @@ const EntryList: React.FC<Props> = ({ storageType }) => {
         <Button
           onPress={refresh}
           title="Odśwież"
+          icon={{
+            name: 'refresh',
+            iconStyle: { color: '#fff' }
+          }}
           loading={loading}
           buttonStyle={{ width: 150 }}
-          type={loading ? 'clear' : 'solid'}
         />
         <Button
           onPress={() => navigation.navigate('Add', { storageType })}
           title="Dodaj"
-          buttonStyle={{ width: 150 }}
+          icon={{
+            name: 'add',
+            iconStyle: { color: '#fff' }
+          }}
+          buttonStyle={{ width: 150, backgroundColor: '#080' }}
         />
       </View>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         {!loading &&
           (reports.length === 0 ? (
-            <Text>Nie ma w pisów</Text>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Icon
+                name="car"
+                type="antdesign"
+                iconStyle={{ color: '#ccc' }}
+                size={120}
+              />
+              <Text style={{ fontSize: 32, color: '#ccc' }}>
+                Nie ma wpisów.
+              </Text>
+            </View>
           ) : (
             <FlatList
               data={reports}
-              renderItem={item => <Item report={item.item} />}
+              renderItem={item => (
+                <Item report={item.item} storageType={storageType} />
+              )}
               keyExtractor={item => String(item.date)}
             />
           ))}

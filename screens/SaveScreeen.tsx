@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { NavigationActions, StackActions } from 'react-navigation';
+import { ActivityIndicator, StyleSheet, View, Text } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import useStorage from '../storage/connectors/useStorage.hook';
 
@@ -25,7 +24,7 @@ const SaveScreeen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#0099ff" />
-      {/* <Text>{JSON.stringify(route.params?.data)}</Text> */}
+      <Text>Zapisywanie ({storageType})...</Text>
     </View>
   );
 };

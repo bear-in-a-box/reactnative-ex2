@@ -3,7 +3,7 @@ import { AsyncStorage } from 'react-native';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { exhaustMap, shareReplay } from 'rxjs/operators';
 
-import { Storage } from '../interface';
+import { Storage, ReportToAdd } from '../interface';
 import { Report } from '../../models/report.model';
 
 export class LocalStorage implements Storage {
@@ -15,9 +15,18 @@ export class LocalStorage implements Storage {
   private loadingState$ = new BehaviorSubject<boolean>(false);
   public loading$ = this.createLoadingInfo();
 
-  async addReport(report: Report) {
+  async addReport(report: ReportToAdd) {
     const reports = await this.getReports();
-    const targetReports = [report, ...reports];
+    const targetReports: Report[] = [
+      { ...report, id: String(report.date) },
+      ...reports
+    ];
+    await AsyncStorage.setItem(LocalStorage.KEY, JSON.stringify(targetReports));
+  }
+
+  async deleteReport(id: string) {
+    const reports = await this.getReports();
+    const targetReports = reports.filter(report => report.id !== id);
     await AsyncStorage.setItem(LocalStorage.KEY, JSON.stringify(targetReports));
   }
 
