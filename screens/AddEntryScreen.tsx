@@ -60,6 +60,7 @@ const AddEntryScreen: React.FC = () => {
         errorMessage={
           model.trim().length === 0 && 'Należy podać markę i/lub model auta'
         }
+        editable={!isAdding}
       />
       <Input
         label="Liczba kilometrów przejechanych od ostatniego tankowania"
@@ -72,6 +73,7 @@ const AddEntryScreen: React.FC = () => {
           kmsSinceLastFill <= 0 &&
           'Należy podać liczbę przejechanych kilometrów'
         }
+        editable={!isAdding}
       />
       <Input
         label="Liczba litrów spalonych od ostatniego tankowania"
@@ -81,6 +83,7 @@ const AddEntryScreen: React.FC = () => {
         onChangeText={text => setLiters(+text || 0)}
         keyboardType="numeric"
         errorMessage={liters <= 0 && 'Należy podać liczbę spalonych litrów'}
+        editable={!isAdding}
       />
       <View style={{ ...styles.date, ...styles.input }}>
         <Input
@@ -93,6 +96,7 @@ const AddEntryScreen: React.FC = () => {
           buttonStyle={{ width: 100, alignSelf: 'flex-end' }}
           title="Ustaw..."
           onPress={showDatePicker}
+          disabled={isAdding}
         />
       </View>
       <Input
@@ -101,6 +105,7 @@ const AddEntryScreen: React.FC = () => {
         placeholder="https://..."
         value={image}
         onChangeText={setImage}
+        editable={!isAdding}
       />
       <Button
         title={`Zapisz do pamięci ${storageType}`}
